@@ -1,14 +1,11 @@
 /**
- * Universitat Autonoma de Barcelona
- * MiP 2019 - 2020
- * NIUS
- * Roger Gili 1497893
- * Albert Romero 
+ * This code example activates pins PTA1 PTA2 and PTD4 for PWM and generates a 50Hz 0 to 100 duty cicle wave.
  */
 
 #include <MKL25Z4.h>
 
-
+int direccion=1;
+int brithgness=0;
 
 //module and preescaler for 50hz
 static int Mod=625;
@@ -16,10 +13,7 @@ static int preescaler=6;
 
 
 void clockConfig();
-void servoA(int grados);
-void servoB(int grados);
-void servoC(int grados);
-int gradosToCnV(int grados);
+void changeBrightness(int brightness);
 void tpm0Config();
 void tpm2Config();
 void pinConfig();
@@ -35,18 +29,20 @@ int main()
     while(1)
     {  
     	int i=0;
-    	int grados;
-    		//for (grados=8; grados<85; ){
-			//	for (i=0;i<500000; i++){;}
-			//	servoA(grados);
-			//	grados=grados+1;
-    		//}
-    		//for (i=0;i<50000000; i++){;}
-    		servoA(11);
-    		for (i=0;i<10000000; i++){;}
-    		servoA(83);
-    		for (i=0;i<10000000; i++){;}
-    		
+    		for (i=0;i<50000; i++){;}
+    		changeBrightness(brithgness);
+    		if(direccion){
+    			brithgness++;
+    		}
+    		else{
+    			brithgness--;
+    		}
+    		if(brithgness==100){
+    			direccion=0;
+    		}
+    		else if(brithgness==0){
+    			direccion=1;
+    		}
     }
     return 0;
 }
@@ -72,7 +68,7 @@ void tpm0Config()
 	TPM0_SC |= TPM_SC_PS(preescaler);    // prescaler  
 	TPM0_MOD = TPM_MOD_MOD(Mod);  //  modulo value 
 	TPM0_SC |= TPM_SC_TOF_MASK; //  clear TOF 
-	TPM0_BASE_PTR->CONTROLS[4].CnSC = TPM_CnSC_MSB_MASK | TPM_CnSC_ELSB_MASK; // SELECT CHANNEL MODE
+	TPM0_BASE_PTR->CONTROLS[4].CnSC = TPM_CnSC_MSB_MASK | TPM_CnSC_ELSA_MASK; // SELECT CHANNEL MODE
 	TPM0_SC |= TPM_SC_CMOD(1);  //enable timer free-running mode 
 }
 
@@ -83,37 +79,15 @@ void tpm2Config()
 	TPM2_SC |= TPM_SC_PS(preescaler);    // prescaler  
 	TPM2_MOD = TPM_MOD_MOD(Mod);  //  modulo value 
 	TPM2_SC |= TPM_SC_TOF_MASK; //  clear TOF 
-	TPM2_BASE_PTR->CONTROLS[0].CnSC = TPM_CnSC_MSB_MASK | TPM_CnSC_ELSB_MASK; // SELECT CHANNEL MODE
-	TPM2_BASE_PTR->CONTROLS[1].CnSC = TPM_CnSC_MSB_MASK | TPM_CnSC_ELSB_MASK; // SELECT CHANNEL MODE
+	TPM2_BASE_PTR->CONTROLS[0].CnSC = TPM_CnSC_MSB_MASK | TPM_CnSC_ELSA_MASK; // SELECT CHANNEL MODE
+	TPM2_BASE_PTR->CONTROLS[1].CnSC = TPM_CnSC_MSB_MASK | TPM_CnSC_ELSA_MASK; // SELECT CHANNEL MODE
 	TPM2_SC |= TPM_SC_CMOD(1);  //enable timer free-running mode 
 }
-
-
 /**
- * grados should be an int ranged from 0 - 180
+ * brightness should be an int ranged from 0 - 100
  */
-void servoA(int grados){
-	TPM2_BASE_PTR->CONTROLS[0].CnV = gradosToCnV(grados);
+void changeBrightness(int brightness){
+	TPM0_BASE_PTR->CONTROLS[4].CnV = (int)(Mod*brightness/100);
+	TPM2_BASE_PTR->CONTROLS[0].CnV = (int)(Mod*brightness/100);
+	TPM2_BASE_PTR->CONTROLS[1].CnV = (int)(Mod*brightness/100);
 }
-
-/**
- * grados should be an int ranged from 0 - 180
- */
-void servoB(int grados){
-	TPM2_BASE_PTR->CONTROLS[1].CnV =  gradosToCnV(grados);
-}	
-
-/**
- * grados should be an int ranged from 0 - 180
- */
-void servoC(int grados){
-	TPM0_BASE_PTR->CONTROLS[4].CnV = gradosToCnV(grados);
-}
-	
-/** 
- * Convierte un valor de grados entre 0 180 a un valor adecuado para el valor de CnV.
- */
-int gradosToCnV(int grados){
-	return (int)(grados); //TODO FORMULA CORRECTA
-}
-
