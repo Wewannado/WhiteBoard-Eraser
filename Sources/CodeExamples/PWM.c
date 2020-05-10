@@ -44,11 +44,10 @@ void clockConfig()
 	MCG_C1 = MCG_C1_IREFS_MASK | MCG_C1_IRCLKEN_MASK; // INTERNAL CLOCK|MCGIRCLK ACTIVE(SET)
 	MCG_C2 = MCG_C2_IRCS_MASK;                        // SELECT FAST INTERNAL REFERENCE CLOCK (1)
 	SIM_SOPT2 |= SIM_SOPT2_TPMSRC(3);                 // MCGIRCLK IS SELECTED FOR TPM CLOCK
+	SIM_BASE_PTR->SCGC5 |= SIM_SCGC5_PORTA_MASK; //enable clock
 }
 void pinConfig(){
-	SIM_BASE_PTR->SCGC5 |= SIM_SCGC5_PORTA_MASK; //enable clock
-	PORTA_BASE_PTR->PCR[12] = PORT_PCR_MUX(7);  //  especificar multiplexacio del TPM1_CH0
-	//PORTA_BASE_PTR->PCR[12] = PORT_PCR_MUX(3);  //  especificar multiplexacio del TPM1_CH0
+	PORTA_BASE_PTR->PCR[12] = PORT_PCR_MUX(3);  //  especificar multiplexacio del TPM1_CH0
 }
 
 void tpm1Config()

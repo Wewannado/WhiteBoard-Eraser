@@ -1,0 +1,9 @@
+
+.project
+.cproject
+.settings/
+FLASH/
+ReferencedRSESystems.xml
+Projecte_FLASH_PnE U-MultiLink.traceConfig
+Project_Settings/Startup_Code/kinetis_sysinit.h
+SaAnalysispointsManager.apconfig
