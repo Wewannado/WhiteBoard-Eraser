@@ -31,11 +31,13 @@ int main()
 	
 	servosInitialPosition();
 	
-	delayMs(3000);
-	servoA_Bajar();
+
+	
 	delayMs(50);
+	borrar();
 	while(1){
-		testA();
+		
+		//escribirHora(0,0);
 //		
 //		int i=0;
 //		servoA(SERVO_A_MAXALTURA);

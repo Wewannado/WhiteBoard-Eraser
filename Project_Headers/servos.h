@@ -22,6 +22,7 @@ void tpm0Config();
 void tpm2Config();
 
 void servosInitialPosition();
+void escribirHora(int HH, int MM);
 
 
 /**
