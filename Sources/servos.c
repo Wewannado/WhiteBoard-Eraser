@@ -7,9 +7,7 @@
 
 #include <MKL25Z4.h>
 #include <servos.h>
-
-
-
+#include <common.h>
 
 
 
@@ -72,5 +70,25 @@ int gradosToCnV(int grados){
 	
 	//our servos goes from 9-85 values. General formula y=mx+n -> y = 0,422x+9
 	return (int)((0.422*grados)+9); //TODO FORMULA CORRECTA
+}
+/**
+ * 
+ */
+void servosInitialPosition(){
+	servoA(SERVO_A_MAXALTURA);
+	delayMs(1000);
+	servoI(90);
+	servoD(90);
+	delayMs(1000);
+}
+
+void servoA_Bajar(){
+	int i= SERVO_A_MAXALTURA;
+	while(i!=SERVO_A_MINALTURA){
+		TPM0_BASE_PTR->CONTROLS[2].CnV = gradosToCnV(i);
+		i--;
+		delayMs(30);
+	}
+	
 }
 
