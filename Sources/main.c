@@ -15,20 +15,27 @@ int main()
 {
 	clockConfig();
 	tpm0Config();
-	tpm2Config();
 	pinConfig();
    
-    while(1)
-    {  
-    	int i=0;
-    	int grados;
-    		for (grados=8; grados<85; ){
-				for (i=0;i<500000; i++){;}
-				servoA(grados);
-				servoB(grados);
-				servoC(grados);
-				grados=grados+1;
-    		}
+	
+	
+	while(1){
+		int i=0;
+		servoA(SERVO_A_MAXALTURA);
+		for (i=0;i<5000000; i++){;}
+		servoA(SERVO_A_MINALTURA);
+		for (i=0;i<5000000; i++){;}
+//    while(1)
+//    {  
+//    	int i=0;
+//    	int grados;
+//    		for (grados=8; grados<85; ){
+//				for (i=0;i<500000; i++){;}
+//				servoA(grados);
+//				servoI(grados);
+//				servoD(grados);
+//				grados=grados+1;
+//    		}
     		//for (i=0;i<50000000; i++){;}
     		//servoA(11);
     		//for (i=0;i<10000000; i++){;}
