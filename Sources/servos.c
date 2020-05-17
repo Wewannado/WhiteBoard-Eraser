@@ -7,40 +7,8 @@
 
 #include <MKL25Z4.h>
 #include <servos.h>
-#include <common.h>
+
 #include <fontFile.h>
-
-
-
-
-void clockConfig()
-{
-	MCG_C1 = MCG_C1_IREFS_MASK | MCG_C1_IRCLKEN_MASK; // INTERNAL CLOCK|MCGIRCLK ACTIVE(SET)
-	MCG_C2 = MCG_C2_IRCS_MASK;                        // SELECT FAST INTERNAL REFERENCE CLOCK (1)
-	SIM_SOPT2 |= SIM_SOPT2_TPMSRC(3);                 // MCGIRCLK IS SELECTED FOR TPM CLOCK
-	SIM_SCGC5 |= SIM_SCGC5_PORTA_MASK; //enable clock to portA
-	SIM_SCGC5 |= SIM_SCGC5_PORTD_MASK; //enable clock to portD
-	SIM_SCGC6 |= SIM_SCGC6_TPM0_MASK; //  enable clock to TPM0 
-	 
-}
-void pinConfig(){
-
-	PORTD_BASE_PTR->PCR[4] = PORT_PCR_MUX(4);  //  especificar multiplexacio del TPM0_CH4
-	PORTA_BASE_PTR->PCR[4] = PORT_PCR_MUX(3);  //  especificar multiplexacio del TPM0_CH1
-	PORTA_BASE_PTR->PCR[5] = PORT_PCR_MUX(3);  //  especificar multiplexacio del TPM0_CH2
-}
-
-void tpm0Config()
-{
-	TPM0_SC  = 0;              // disable timer while configuring
-	TPM0_SC |= TPM_SC_PS(TPM_50HZ_PREESCALER);    // prescaler  
-	TPM0_MOD = TPM_MOD_MOD(TPM_50HZ_MOD);  //  modulo value 
-	TPM0_SC |= TPM_SC_TOF_MASK; //  clear TOF 
-	TPM0_BASE_PTR->CONTROLS[4].CnSC = TPM_CnSC_MSB_MASK | TPM_CnSC_ELSB_MASK; // SELECT CHANNEL MODE
-	TPM0_BASE_PTR->CONTROLS[1].CnSC = TPM_CnSC_MSB_MASK | TPM_CnSC_ELSB_MASK; // SELECT CHANNEL MODE
-	TPM0_BASE_PTR->CONTROLS[2].CnSC = TPM_CnSC_MSB_MASK | TPM_CnSC_ELSB_MASK; // SELECT CHANNEL MODE
-	TPM0_SC |= TPM_SC_CMOD(1);  //enable timer free-running mode 
-}
 
 
 /**
@@ -77,10 +45,50 @@ int gradosToCnV(int grados){
  */
 void servosInitialPosition(){
 	servoA(SERVO_A_MAXALTURA);
-	delayMs(1000);
+	delayMs(300);
 	servoI(140);
 	servoD(120);
+	delayMs(300);
+}
+
+
+void servosCenter(){
+	//up
+	servoA(SERVO_A_MAXALTURA);
+	delayMs(300);
+	//dar center
+	servoI(90);
+	servoD(90);
 	delayMs(1000);
+}
+/*
+ * Function used to visually check if the arms are correctly mounted. 
+ * Goes up, center, far left, far right, down, up, far left, down, up.
+ */
+void servosCalibrate(){
+	servosCenter();
+	//far left
+	servoI(150);
+	servoD(130);
+	delayMs(1000);
+	//far right
+	servoI(50);
+	servoD(30);
+	delayMs(1000);
+	//down
+	servoA_Bajar();
+	delayMs(1000);
+	//up
+	servoA(SERVO_A_MAXALTURA);
+	delayMs(1000);
+	//far left
+	servoI(140);
+	servoD(120);
+	delayMs(300);
+	//down
+	servoA_Bajar();
+	//up
+	servoA(SERVO_A_MAXALTURA);
 }
 
 void servoA_Bajar(){
@@ -100,7 +108,7 @@ void escribirNumero(int servoIz[], int servoDe[], int steps){
 		if(i==0){
 			servoA_Bajar();
 		}
-		delayMs(300);
+		delayMs(2000);
 	}
 }
 
@@ -117,26 +125,26 @@ void escribirHora(int HH, int MM){
 	case 1:
 	case 2:
 	case 3:
-	case '4':
-	case '5':
-	case '6':
-	case '7':
-	case '8':
-	case '9':
-	case '10':
-	case '11':
-	case '12':
-	case '13':
-	case '14':
-	case '15':
-	case '16':
-	case '17':
-	case '18':
-	case '19':
-	case '20':
-	case '21':
-	case '22':
-	case '23':
+	case 4:
+	case 5:
+	case 6:
+	case 7:
+	case 8:
+	case 9:
+	case 10:
+	case 11:
+	case 12:
+	case 13:
+	case 14:
+	case 15:
+	case 16:
+	case 17:
+	case 18:
+	case 19:
+	case 20:
+	case 21:
+	case 22:
+	case 23:
 		break;
 	default:
 		break;

@@ -6,22 +6,15 @@
  */
 
 #include <MKL25Z4.h>
-
+#include <common.h>
 
 //module and preescaler for 50hz
-static int TPM_50HZ_MOD=625;
-static int TPM_50HZ_PREESCALER=6;
-static int SERVO_A_MAXALTURA=50; //more height than this makes the structure hit the servo.
-static int SERVO_A_MINALTURA=33;
 
-void clockConfig();
-void pinConfig();
 
-void tpm0Config();
-
-void tpm2Config();
 
 void servosInitialPosition();
+void servosCalibrate();
+void servosCenter();
 void escribirHora(int HH, int MM);
 
 
