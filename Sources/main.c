@@ -1,9 +1,9 @@
 /**
- * Universitat Autonoma de Barcelona
+ * Universitat Autònoma de Barcelona
  * MiP 2019 - 2020
  * NIUS
  * Roger Gili 1497893
- * Albert Romero 
+ * Albert Romero 1425095
  */
 
 #include <MKL25Z4.h>
@@ -12,6 +12,8 @@
 #include "common.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
+#include <ctime>
 
 void UART0_IRQHandler(void);
 void setDate(void);
@@ -20,11 +22,14 @@ void programmingMode();
 void actualitzaHora();
 
 //HORA actual
-int hh = 00;
-int mm = 00;
+struct tm dateinfo;
+struct tm *dateinfoPointer=&dateinfo;
 
-//cada quants MINUTS s'actualitza la hora
-int refreshTimmerMinutes=1;
+//boolea que indica si es necesari una actulitzacio de la hora que esta escrita a la pisarra
+int repaintNeeded=0;
+
+//cada quants SEGONS s'actualitza la dateinfo
+int refreshTimmerSeconds=60;
 
 //timer variable
 int segonsPassats=0;
@@ -40,36 +45,12 @@ int main() {
 	servosCenter();
 	servosInitialPosition();
 	//servosCalibrate();
-
-	delayMs(50);
-	//borrar();
-	//servosInitialPosition();
+	borrarPizarra();
+	//test
 	while (1) {
-
-		//escribirHora(0,0);
-		//		
-		//		int i=0;
-		//		servoA(SERVO_A_MAXALTURA);
-		//		for (i=0;i<5000000; i++){;}
-		//		servoA(SERVO_A_MINALTURA);
-		//		for (i=0;i<5000000; i++){;}
-		//    while(1)
-		//    {  
-		//    	int i=0;
-		//    	int grados;
-		//    		for (grados=8; grados<85; ){
-		//				for (i=0;i<500000; i++){;}
-		//				servoA(grados);
-		//				servoI(grados);
-		//				servoD(grados);
-		//				grados=grados+1;
-		//    		}
-		//for (i=0;i<50000000; i++){;}
-		//servoA(11);
-		//for (i=0;i<10000000; i++){;}
-		//servoA(83);
-		//for (i=0;i<10000000; i++){;}
-
+		if(repaintNeeded){
+			actualitzaHora();
+		}
 	}
 	return 0;
 }
@@ -94,7 +75,7 @@ void UART0_IRQHandler(void) {
 }
 void programmingMode() {
 	//GPIOB_PCOR |= 0x80000; /* switch green LED Programming mode ON */
-	LED_set('m');
+	LED_toogle('m');
 	char missatgeExplicacio[] =
 			"Prem 't' per programar la hora actual\r\nPrem 'd' per moure els servos manualment\r\nPrem 'e' per sortir\r\n";
 	//char missatgeEmetre[100]= "Entrant en mode de programacio\r\nSi us plau, escriu la hora actual en format HH:MM\r\n";
@@ -125,10 +106,10 @@ void programmingMode() {
 		}
 	}
 	messageSend("Exit.\r\n");
-	LED_set('m'); /* switch green LED off end of programming mode*/
+	LED_toogle('m'); /* switch green LED off end of programming mode*/
 }
 void setDate(void) {
-	messageSend("Si us plau, escriu la hora actual en format HH:MM\r\n");
+	messageSend("Si us plau, escriu la dateinfo actual en format HH:MM\r\n");
 	char stringHora[2];
 	char stringMinuts[2];
 	int newHH;
@@ -159,15 +140,15 @@ void setDate(void) {
 
 		if (!ValidateTime(newHH, newMM)) {
 			messageSend(
-					"Data no valida. \r\nSi us plau, escriu la hora actual en format HH:MM\r\n ");
+					"Data no valida. \r\nSi us plau, escriu la dateinfo actual en format HH:MM\r\n ");
 		} else {
 			messageSend("La nova data es:");
 			messageSend(stringHora);
 			messageSend(":");
 			messageSend(stringMinuts);
 			messageSend("\r\n");
-			hh = newHH;
-			mm = newMM;
+			dateinfo.tm_hour = newHH;
+			dateinfo.tm_min = newMM;
 		}
 	}
 }
@@ -199,8 +180,12 @@ void manualMode(void) {
 					messageSend(" movent servo dret a: ");
 					messageSend(stringD);
 					messageSend("\r\n");
+		
 		servoI(atoi(stringI));
 		servoD(atoi(stringD));
+		servoA_Bajar();
+		delayMs(2000);
+		servoA(SERVO_A_MAXALTURA);
 		
 	}
 }
@@ -208,11 +193,11 @@ void manualMode(void) {
 
 void FTM1_IRQHandler(void) 
 {
-	LED_set('m');
+	LED_toogle('m');
 	//messageSend("Interrupcio del timmer\r\n");
 	segonsPassats++;
-	if(segonsPassats==(refreshTimmerMinutes*60)){
-		actualitzaHora();
+	if(segonsPassats>=refreshTimmerSeconds){
+		repaintNeeded=1;
 		segonsPassats=0;
 	}
 	TPM1_SC |= TPM_SC_TOF_MASK;   // clear TOF DONE
@@ -220,23 +205,44 @@ void FTM1_IRQHandler(void)
 
 
 void actualitzaHora(){
-	mm=mm+refreshTimmerMinutes;
-	if(mm>=60){
-		mm=mm%60;
-		hh++;
+	LED_toogle('t');
+	int addMinutes=0;
+	int addHours=0;
+	if((dateinfo.tm_sec+refreshTimmerSeconds)<60){
+		dateinfo.tm_sec=dateinfo.tm_sec+refreshTimmerSeconds;
 	}
-	if(hh==24){
-		hh=0;
+	else{
+		dateinfo.tm_sec=(dateinfo.tm_sec+refreshTimmerSeconds)%60;
+		addMinutes=(int)((dateinfo.tm_sec+refreshTimmerSeconds)/60);
 	}
-	char stringHH[2];
-	char stringMM[2];
-	sprintf(stringHH, "%d", hh);
-	sprintf(stringMM, "%d", mm);
+	if((dateinfo.tm_min+addMinutes)<60){
+		dateinfo.tm_min=dateinfo.tm_min+addMinutes;
+	}
+	else{
+		dateinfo.tm_min=(dateinfo.tm_min+addMinutes)%60;
+		addHours=(int)((dateinfo.tm_min+addMinutes)/60);
+	}
+	if((dateinfo.tm_hour+addHours)<24){
+			dateinfo.tm_hour=dateinfo.tm_hour+addHours;
+	}
+	else{
+		dateinfo.tm_hour=(dateinfo.tm_hour+addHours)%24;
+		}
+	
 	messageSend("Actualitzant a la nova hora:");
-	messageSend(stringHH);
-	messageSend(":");
-	messageSend(stringMM);
+	//char buffer[8];
+	//strftime(buffer,sizeof(buffer),"%H:%M:%S",dateinfoPointer);
+	//messageSend(buffer);
 	messageSend("\r\n");
+	
+	
+	//mover los servos para actualizar la hora.
+	borrarPizarra();
+	//escribir la nueva hora
+	//escribirHoraEnPizarra(dateinfo.tm_hour, dateinfo.tm_min);
+	//clears the repaint flag
+	repaintNeeded=0;
+	LED_toogle('t');
 }
 
 

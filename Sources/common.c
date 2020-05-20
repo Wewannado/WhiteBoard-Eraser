@@ -11,6 +11,8 @@
 
 int TPM_50HZ_MOD=625;
 int TPM_50HZ_PREESCALER=6;
+int TPM_1HZ_MOD=15625;
+int TPM_1HZ_PREESCALER=7;
 int SERVO_A_MAXALTURA=50; //more height than this makes the structure hit the servo.
 int SERVO_A_MINALTURA=33;
 
@@ -18,6 +20,7 @@ int SERVO_A_MINALTURA=33;
 void clockConfig()
 {
 	MCG_C1 = MCG_C1_IREFS_MASK | MCG_C1_IRCLKEN_MASK; // INTERNAL CLOCK|MCGIRCLK ACTIVE(SET)
+	
 	MCG_C2 = MCG_C2_IRCS_MASK;                        // SELECT FAST INTERNAL REFERENCE CLOCK (1)
 	SIM_SOPT2 |= SIM_SOPT2_TPMSRC(3);                 // MCGIRCLK IS SELECTED FOR TPM CLOCK
 	SIM_SCGC5 |= SIM_SCGC5_PORTA_MASK; //enable clock to portA
@@ -55,8 +58,8 @@ void tpm0Config()
 void tpm1Config()
 {
 	TPM1_SC  = 0;             // disable timer while configuring
-	TPM1_SC |= TPM_SC_PS(7);   // prescaler 
-	TPM1_MOD = TPM_MOD_MOD(15625); // modulo value  
+	TPM1_SC |= TPM_SC_PS(TPM_1HZ_PREESCALER);   // prescaler 
+	TPM1_MOD = TPM_MOD_MOD(TPM_1HZ_MOD); // modulo value  
 	TPM1_SC |= TPM_SC_TOF_MASK;              //  clear TOF 
 	TPM1_SC |= TPM_SC_TOIE_MASK;              //  enable timeout interrupt 
     TPM1_SC |= TPM_SC_CMOD(1); //  enable timer free-running mode 
@@ -73,7 +76,7 @@ int j;
 	}
 }
 
-void LED_set(char mode)
+void LED_toogle(char mode)
 {
 	if(mode=='p'){
       	GPIOB_PTOR |= 0x80000;    /* switch green LED */
@@ -81,7 +84,21 @@ void LED_set(char mode)
 	if(mode=='m'){
 		GPIOB_PTOR |= (1<<18);    /* switch red LED */
 		}
-	
+	if(mode=='t'){
+		GPIOD_PTOR |= (1<<1);    /* switch blue LED */
+		}
+}
+void LED_shutoff(char mode)
+{
+	if(mode=='p'){
+      	GPIOB_PSOR |= 0x80000;    /* switch off green LED */
+	}
+	if(mode=='m'){
+		GPIOB_PSOR |= (1<<18);    /* switch off red LED */
+		}
+	if(mode=='t'){
+		GPIOD_PSOR |= (1<<1);    /* switch off blue LED */
+		}
 }
 
 void LED_init(void)

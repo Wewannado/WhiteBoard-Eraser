@@ -15,7 +15,8 @@
 void servosInitialPosition();
 void servosCalibrate();
 void servosCenter();
-void escribirHora(int HH, int MM);
+void escribirHoraEnPizarra(int HH, int MM);
+void borrarPizarra();
 
 
 /**

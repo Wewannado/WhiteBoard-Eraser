@@ -46,7 +46,7 @@ int gradosToCnV(int grados){
 void servosInitialPosition(){
 	servoA(SERVO_A_MAXALTURA);
 	delayMs(300);
-	servoI(140);
+	servoI(150);
 	servoD(120);
 	delayMs(300);
 }
@@ -70,19 +70,19 @@ void servosCalibrate(){
 	//far left
 	servoI(150);
 	servoD(130);
-	delayMs(1000);
+	delayMs(500);
 	//far right
 	servoI(50);
 	servoD(30);
-	delayMs(1000);
+	delayMs(500);
 	//down
 	servoA_Bajar();
-	delayMs(1000);
+	delayMs(5000);
 	//up
 	servoA(SERVO_A_MAXALTURA);
-	delayMs(1000);
+	delayMs(500);
 	//far left
-	servoI(140);
+	servoI(150);
 	servoD(120);
 	delayMs(300);
 	//down
@@ -108,18 +108,19 @@ void escribirNumero(int servoIz[], int servoDe[], int steps){
 		if(i==0){
 			servoA_Bajar();
 		}
-		delayMs(2000);
+		delayMs(500);
 	}
+	servoA(SERVO_A_MAXALTURA);
 }
 
 
-void borrar(){
+void borrarPizarra(){
 	escribirNumero(CLEAR_WHITEBOARD_SERVO_I,CLEAR_WHITEBOARD_SERVO_D,sizeof(CLEAR_WHITEBOARD_SERVO_I)/sizeof(CLEAR_WHITEBOARD_SERVO_I[0]));
 }
 void escribirHora(int HH, int MM){
 	switch (HH){
 	case 0:
-		//escribirNumero(HOURS_FIRST_DIGIT_0_SERVO_I,HOURS_FIRST_DIGIT_0_SERVO_D,sizeof(HOURS_FIRST_DIGIT_0_SERVO_I)/sizeof(HOURS_FIRST_DIGIT_0_SERVO_I[0]));
+		escribirNumero(HOURS_FIRST_DIGIT_0_SERVO_I,HOURS_FIRST_DIGIT_0_SERVO_D,sizeof(HOURS_FIRST_DIGIT_0_SERVO_I)/sizeof(HOURS_FIRST_DIGIT_0_SERVO_I[0]));
 		//escribirNumero(HOURS_FIRST_DIGIT_0_SERVO_I,HOURS_FIRST_DIGIT_0_SERVO_D,sizeof(HOURS_FIRST_DIGIT_0_SERVO_I)/sizeof(HOURS_FIRST_DIGIT_0_SERVO_I[0]));
 		break;
 	case 1:
@@ -149,6 +150,6 @@ void escribirHora(int HH, int MM){
 	default:
 		break;
 	}
-	escribirNumero(SEPARATOR_SERVO_I,SEPARATOR_SERVO_D,sizeof(SEPARATOR_SERVO_I)/sizeof(SEPARATOR_SERVO_I[0]));
+	//escribirNumero(SEPARATOR_SERVO_I,SEPARATOR_SERVO_D,sizeof(SEPARATOR_SERVO_I)/sizeof(SEPARATOR_SERVO_I[0]));
 }
 

@@ -19,5 +19,6 @@ void tpm0Config();
 void tpm1Config();
 void LED_init(void);
 void delayMs(int n);
-void LED_set(char mode);
+void LED_toogle(char mode);
+void LED_shutoff(char mode);
 int ValidateTime(int hh , int mm);
