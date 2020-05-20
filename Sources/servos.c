@@ -111,17 +111,18 @@ void escribirNumero(int servoIz[], int servoDe[], int steps){
 		delayMs(500);
 	}
 	servoA(SERVO_A_MAXALTURA);
+	delayMs(100);
 }
 
 
 void borrarPizarra(){
 	escribirNumero(CLEAR_WHITEBOARD_SERVO_I,CLEAR_WHITEBOARD_SERVO_D,sizeof(CLEAR_WHITEBOARD_SERVO_I)/sizeof(CLEAR_WHITEBOARD_SERVO_I[0]));
 }
-void escribirHora(int HH, int MM){
+void escribirHoraEnPizarra(int HH, int MM){
 	switch (HH){
-	case 0:
+	case 0: //00H
 		escribirNumero(HOURS_FIRST_DIGIT_0_SERVO_I,HOURS_FIRST_DIGIT_0_SERVO_D,sizeof(HOURS_FIRST_DIGIT_0_SERVO_I)/sizeof(HOURS_FIRST_DIGIT_0_SERVO_I[0]));
-		//escribirNumero(HOURS_FIRST_DIGIT_0_SERVO_I,HOURS_FIRST_DIGIT_0_SERVO_D,sizeof(HOURS_FIRST_DIGIT_0_SERVO_I)/sizeof(HOURS_FIRST_DIGIT_0_SERVO_I[0]));
+		escribirNumero(HOURS_SECOND_DIGIT_0_SERVO_I,HOURS_SECOND_DIGIT_0_SERVO_D,sizeof(HOURS_SECOND_DIGIT_0_SERVO_I)/sizeof(HOURS_SECOND_DIGIT_0_SERVO_I[0]));
 		break;
 	case 1:
 	case 2:
@@ -150,6 +151,11 @@ void escribirHora(int HH, int MM){
 	default:
 		break;
 	}
+	escribirNumero(SEPARATOR_SERVO_I_S,SEPARATOR_SERVO_D_S,sizeof(SEPARATOR_SERVO_I_S)/sizeof(SEPARATOR_SERVO_I_S[0]));
+	escribirNumero(SEPARATOR_SERVO_I_I,SEPARATOR_SERVO_D_I,sizeof(SEPARATOR_SERVO_I_I)/sizeof(SEPARATOR_SERVO_I_I[0]));
+	
+
 	//escribirNumero(SEPARATOR_SERVO_I,SEPARATOR_SERVO_D,sizeof(SEPARATOR_SERVO_I)/sizeof(SEPARATOR_SERVO_I[0]));
+	servosInitialPosition();
 }
 

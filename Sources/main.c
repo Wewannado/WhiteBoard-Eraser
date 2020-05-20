@@ -45,7 +45,7 @@ int main() {
 	servosCenter();
 	servosInitialPosition();
 	//servosCalibrate();
-	borrarPizarra();
+	//borrarPizarra();
 	//test
 	while (1) {
 		if(repaintNeeded){
@@ -239,7 +239,7 @@ void actualitzaHora(){
 	//mover los servos para actualizar la hora.
 	borrarPizarra();
 	//escribir la nueva hora
-	//escribirHoraEnPizarra(dateinfo.tm_hour, dateinfo.tm_min);
+	escribirHoraEnPizarra(dateinfo.tm_hour, dateinfo.tm_min);
 	//clears the repaint flag
 	repaintNeeded=0;
 	LED_toogle('t');
