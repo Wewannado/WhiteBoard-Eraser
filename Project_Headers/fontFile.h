@@ -1,10 +1,11 @@
-/*
- * fontFile.h
- *
- *  Created on: May 16, 2020
- *      Author: Diddi
+/**
+ * Universitat Autònoma de Barcelona
+ * MiP 2019 - 2020
+ * PROJECTE WHITEBOARD CLOCK
+ * NIUS
+ * Roger Gili 1497893
+ * Albert Romero 1425095
  */
-
 
 int CLEAR_WHITEBOARD_SERVO_I[]={150,50,130,150,150,65,50,150};
 int CLEAR_WHITEBOARD_SERVO_D[]={120,10,80,120,90,25,25,120};
